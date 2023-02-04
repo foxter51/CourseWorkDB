@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.min.js" integrity="sha384-IDwe1+LCz02ROU9k972gdyvl+AESN10+x7tBKgc9I5HFtuNz0wWnPclzo6p9vxnk" crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/b7f4bdb099.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+<main class="container py-5">
+    <div class="row d-flex align-items-center">
+        <div class="col">
+            <h1 class="text-center">Materials Accounting</h1>
+        </div>
+        <div class="col">
+            <% if(session.userEmail){ %>
+                <div class="d-flex flex-row-reverse justify-content-around w-75 float-end">
+                    <a href="/logout"><i class="fa-solid fa-right-from-bracket"></i></a>
+                    <span class="align-middle float-end">Welcome <%=session.userEmail%></span>
+                </div>
+            <%} else {%>
+                    <div class="float-end" id="logRegSelect">
+                        <button class="btn btn-info m-2" id="regButton">Register</button>
+                        <button class="btn btn-info m-2" id="logButton">Login</button>
+                    </div>
+
+                    <div class="float-end" id="logForm" style="display: none">
+                        <form method="post" action="/login">
+                            <div class="form-group">
+                                <input type="email" class="form-control" name="user_email" placeholder="Email" maxlength="256" required>
+                                <input type="password" class="form-control" name="user_password" placeholder="Password" minlength="8" maxlength="32" required>
+                                <button class="form btn btn-primary m-2" id="login" type="submit">Login</button>
+                                <a href="/" ><i class="fa-solid fa-left-long"></i></a>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="float-end" id="regForm" style="display: none">
+                        <form method="post" action="/register">
+                            <div class="form-group">
+                                <input type="email" class="form-control" name="user_email" placeholder="Email" maxlength="256" required>
+                                <input type="password" class="form-control" name="user_password" placeholder="Password" minlength="8" maxlength="32" required>
+                                <button class="btn btn-primary m-2" id="register" type="submit">Register</button>
+                                <a href="/"><i class="fa-solid fa-left-long"></i></a>
+                            </div>
+                        </form>
+                    </div>
+            <%}%>
+            <script>
+                $("#logButton").click(function (){
+                    $("#logButton").fadeOut()
+                    $("#regButton").fadeOut()
+                    $("#logForm").hide(0).delay(500).show(0)
+                })
+                $("#regButton").click(function (){
+                    $("#logButton").fadeOut()
+                    $("#regButton").fadeOut()
+                    $("#regForm").hide(0).delay(500).show(0)
+                })
+            </script>
+        </div>
+    </div>
+    <hr class="m-3 pb-3">
+    <div class="row">
+        <div class="col w-auto">
+            <div class="flex-shrink-0 p-3 bg-info bg-opacity-10 rounded" style="width: 280px;">
+                <div class="div" id="sideBar">
+                    <a class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
+                        <span class="fs-5 fw-semibold" style="margin-left: 30px">Tables</span>
+                    </a>
+                    <ul class="list-unstyled ps-0">
+                        <li class="mb-1">
+                            <div class="collapse show" id="home-collapse">
+                                <%if(tableHeader == null){%>
+                                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1">
+                                    <li><a name="link" href="/styles"><button class="btn btn-primary-outline">Display Styles</button></a></li>
+                                    <li><a name="link" href="/raw_materials"><button class="btn btn-primary-outline">Display Raw Materials</button></a></li>
+                                    <li><a name="link" href="/units"><button class="btn btn-primary-outline">Display Units</button></a></li>
+                                    <li><a name="link" href="/heels"><button class="btn btn-primary-outline">Display Heels</button></a></li>
+                                    <li><a name="link" href="/soles"><button class="btn btn-primary-outline">Display Soles</button></a></li>
+                                    <li><a name="link" href="/linings"><button class="btn btn-primary-outline">Display Linings</button></a></li>
+                                    <li><a name="link" href="/materials_warehouse"><button class="btn btn-primary-outline">Display Materials Warehouse</button></a></li>
+                                    <li><a name="link" href="/rest_materials"><button class="btn btn-primary-outline">Display Rest Of The Materials</button></a></li>
+                                </ul>
+                                <%if(!session.userEmail){%>
+                                    <script>
+                                        $("#sideBar").css({ 'opacity' : '0.5',
+                                                            'background' : 'url(https://www.freeiconspng.com/thumbs/lock-icon/lock-icon-11.png) no-repeat',
+                                                            'background-size' : '100%',
+                                                            'background-position' : 'center'})
+                                        $("[name = 'link']").removeAttr('href')
+                                    </script>
+                                <%}%>
+                                <%}
+                                else{%>
+                                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1">
+                                        <li><a href="/"><button class="btn btn-primary-outline">Go back</button></a></li>
+                                    </ul>
+                                <%}%>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <%if(tableHeader !== null){%>
+        <div class="col w-auto bg-info bg-opacity-10 rounded">
+            <div class="row flex-shrink-0 p-3">
+                <%if(!session.userEmail){%>
+                    <span class="fs-5 fw-semibold" style="margin-left: 30px">You don't have access to this page</span>
+                <%} else{%>
+                <a class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
+                    <span class="fs-5 fw-semibold" style="margin-left: 30px"><%=tableHeader%></span>
+                </a>
+                <table class="table" id="DataTable">
+                    <thead>
+                    <tr>
+                        <%names.forEach(function (name){ %>
+                        <th scope="col"><%=name.Field%></th>
+                        <%})%>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <%values.forEach(function (value){ %>
+                    <tr>
+                        <%names.forEach(function (name){ %>
+                        <td><%=value[name.Field]%></td>
+                        <%})%>
+                        <%if (tableHeader !== 'RestMaterials') {%>
+                        <td>
+                            <form method="post" action="/remove_record">
+                                <button type="submit" class="btn btn-primary-outline" name="TablePlusID"
+                                        value="<%=tableHeader%> <%=value['ID']%>"><i class="fa-solid fa-trash"></i></button>
+                            </form>
+                        </td>
+                        <td>
+                            <button class="btn btn-primary-outline" id="editButton<%=value['ID']%>"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <script>
+                                $("#editButton<%=value['ID']%>").click(function (){
+                                    $("#editableID").val('<%=value['ID']%>')
+
+                                    $("#editableStyle").val('<%=value['Style']%>')
+
+                                    $("#editableStyle option").each(function (){
+                                        if($(this).text() === '<%=value['Style']%>'){
+                                            $("#editableStyle").val($(this).val()).change()
+                                        }
+                                    })
+
+                                    $("#editableRawMaterial").val('<%=value['RawMaterial']%>')
+
+                                    $("#editableRawMaterial option").each(function (){
+                                        if($(this).text() === '<%=value['RawMaterial']%>'){
+                                            $("#editableRawMaterial").val($(this).val()).change()
+                                        }
+                                    })
+
+                                    $("#editableQuantity").val(`<%=value['Quantity']%>`).change()
+
+                                    $("#editableUnit").val('<%=value['Unit']%>')
+
+                                    $("#editableUnit option").each(function (){
+                                        if($(this).text() === '<%=value['Unit']%>'){
+                                            $("#editableUnit").val($(this).val()).change()
+                                        }
+                                    })
+
+                                    $("#editRow").show()
+                                })
+                            </script>
+                        </td>
+                        <%}%>
+                    </tr>
+                    <%})%>
+                    <%if (tableHeader !== 'RestMaterials') {%>
+                    <tr>
+                        <form method="post" action="/add_record_<%=tableHeader%>">
+                            <%names.forEach(function (name){%>
+                            <td>
+                                <%if(tableHeader !== 'Styles' && tableHeader !== 'RawMaterials' && tableHeader !== 'Units'){
+                                if(name.Field === 'Style'){%>
+                                <select class="form-select" name="<%=name.Field%>" required>
+                                    <%styles.forEach(function (style){%>
+                                    <option value="<%=style['ID']%>"><%=style['Style']%></option>
+                                    <%})%>
+                                </select>
+                                <%} else if(name.Field === 'RawMaterial'){%>
+                                <select class="form-select" name="<%=name.Field%>" required>
+                                    <%materials.forEach(function (material){%>
+                                    <option value="<%=material['ID']%>"><%=material['RawMaterial']%></option>
+                                    <%})%>
+                                </select>
+                                <%} else if(name.Field === 'Unit'){%>
+                                <select class="form-select" name="<%=name.Field%>" required>
+                                    <%units.forEach(function (unit){%>
+                                    <option value="<%=unit['ID']%>"><%=unit['Unit']%></option>
+                                    <%})%>
+                                </select>
+                                <%} else{%>
+                                <input type="text" class="form-control"
+                                       name="<%=name.Field%>" placeholder="<%=name.Field%>"
+                                       <%if(name.Field === 'ID'){%>disabled<%} else{%> required <%}%>>
+                                <%}
+                                }else{%>
+                                <input type="text" class="form-control"
+                                       name="<%=name.Field%>" placeholder="<%=name.Field%>"
+                                       <%if(name.Field === 'ID'){%>disabled<%} else{%> required <%}%>>
+                                <%}%>
+                            </td>
+                            <%})%>
+                            <td colspan="2" class="text-center">
+                                <button class="btn btn-primary-outline" type="submit">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            </td>
+                        </form>
+                    </tr>
+                    <tr style="display: none" id="editRow">
+                        <form method="post" action="/edit_record_<%=tableHeader%>">
+                            <%names.forEach(function (name){%>
+                            <td>
+                                <%if(tableHeader !== 'Styles' && tableHeader !== 'RawMaterials' && tableHeader !== 'Units'){
+                                if(name.Field === 'Style'){%>
+                                <select class="form-select" name="<%=name.Field%>" id="editable<%=name.Field%>" required>
+                                    <%styles.forEach(function (style){%>
+                                    <option value="<%=style['ID']%>"><%=style['Style']%></option>
+                                    <%})%>
+                                </select>
+                                <%} else if(name.Field === 'RawMaterial'){%>
+                                <select class="form-select" name="<%=name.Field%>" id="editable<%=name.Field%>" required>
+                                    <%materials.forEach(function (material){%>
+                                    <option value="<%=material['ID']%>"><%=material['RawMaterial']%></option>
+                                    <%})%>
+                                </select>
+                                <%} else if(name.Field === 'Unit'){%>
+                                <select class="form-select" name="<%=name.Field%>" id="editable<%=name.Field%>" required>
+                                    <%units.forEach(function (unit){%>
+                                    <option value="<%=unit['ID']%>"><%=unit['Unit']%></option>
+                                    <%})%>
+                                </select>
+                                <%} else{%>
+                                <input type="text" class="form-control" id="editable<%=name.Field%>"
+                                       name="<%=name.Field%>" placeholder="<%=name.Field%>"
+                                       <%if(name.Field === 'ID'){%>readonly<%}%> required>
+                                <%}
+                                }else{%>
+                                <input type="text" class="form-control" id="editable<%=name.Field%>"
+                                       name="<%=name.Field%>" placeholder="<%=name.Field%>"
+                                       <%if(name.Field === 'ID'){%> readonly<%}%> required>
+                                <%}%>
+                            </td>
+                            <%})%>
+                            <td colspan="2" class="text-center">
+                                <button class="btn btn-primary-outline" type="submit">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                            </td>
+                        </form>
+                    </tr>
+                    <%}%>
+                    </tbody>
+                </table>
+                    <%if(tableHeader === 'Styles' || tableHeader === 'RawMaterials' || tableHeader === 'Units'){%>
+                        <div class="row flex-shrink-0 p-3 rounded">
+                    <span class="border border-danger rounded text-danger">
+                        Warning! Deleting records in this table will result in deleting other records in other tables
+                    </span>
+                        </div>
+                    <%}}%>
+            </div>
+        </div>
+        <%}%>
+    </div>
+</main>
+</body>
+</html>
